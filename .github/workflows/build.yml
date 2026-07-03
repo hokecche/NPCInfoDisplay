@@ -12,7 +12,6 @@ jobs:
         with:
           submodules: recursive
 
-      # 使用XMake官方维护的镜像源安装，100%避免地址错误和网络404问题
       - name: 安装XMake构建环境
         run: Invoke-Expression (Invoke-WebRequest 'https://cdn.jsdelivr.net/gh/xmake-io/xmake@master/scripts/get.ps1' -UseBasicParsing)
 
