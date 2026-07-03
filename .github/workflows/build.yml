@@ -1,0 +1,14 @@
+name: Build F4SE Plugin
+runs-on: windows-latest
+steps:
+  - uses: actions/checkout@v4
+    with:
+      submodules: recursive
+  - uses: xmake-io/github-action-setup-xmake@v1
+  - name: Build Plugin
+    run: xmake build -m releasedbg
+  - name: Upload Output DLL
+    uses: actions/upload-artifact@v4
+    with:
+      name: NPCInfoDisplay
+      path: build/windows/releasedbg/NPCInfoDisplay.dll
