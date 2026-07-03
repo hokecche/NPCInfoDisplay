@@ -1,17 +1,16 @@
--- 引入CommonLibF4子项目依赖
+-- 引入CommonLibF4子项目
 includes("lib/commonlibf4")
 
--- 项目基础配置
+-- 全局基础配置 强绑定不允许被覆盖
 set_project("NPCInfoDisplay")
 set_version("1.0.0")
 set_license("GPL-3.0")
 set_languages("c++23")
--- 启用全量编译警告，提前排查代码隐患
 set_warnings("allextra")
--- 强制绑定动态运行时，避免和游戏本体依赖冲突
+-- 全局强制锁定CRT运行时为MD，和CommonLibF4完全对齐，从根源避免链接冲突
 set_runtimes("MD")
 
--- 预配置spdlog日志库，适配F4SE插件的宽字符输出要求
+-- 预配置spdlog依赖，适配F4的宽字符输出要求
 add_requires("spdlog 1.16.0", {
     configs = {
         wchar = true,
@@ -23,7 +22,7 @@ add_requires("spdlog 1.16.0", {
 add_rules("mode.debug", "mode.release", "mode.releasedbg")
 add_rules("plugin.vsxmake.autoupdate")
 
--- 插件构建目标
+-- 插件构建目标 所有配置都在独立作用域内生效
 target("NPCInfoDisplay")
     add_rules("commonlibf4.plugin", {
         name = "NPCInfoDisplay",
@@ -35,5 +34,11 @@ target("NPCInfoDisplay")
     add_headerfiles("src/**.h")
     add_includedirs("src")
     set_pcxxheader("src/pch.h")
-    -- 关联spdlog依赖
     add_packages("spdlog")
+
+-- 针对Release模式做定向强约束，避免默认规则覆盖
+if is_mode("release") then
+    set_optimize("fastest")
+    add_defines("NDEBUG")
+    set_symbols("none")
+end
