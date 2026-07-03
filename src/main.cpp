@@ -38,13 +38,33 @@ namespace Plugin
             if (!targetActor || targetActor->IsDead())
                 return;
 
+            // 获取NPC名称
+            std::string npcName = "";
+            if (auto baseForm = targetActor->GetBaseObject())
+            {
+                if (auto name = baseForm->GetName())
+                {
+                    npcName = name;
+                }
+            }
+            
+            // 如果无法获取名称，使用默认值
+            if (npcName.empty())
+            {
+                npcName = "未知目标";
+            }
+
             // 读取NPC核心属性
             std::uint32_t npcLevel = targetActor->GetLevel();
             float currentHP = targetActor->GetActorValue(RE::ActorValue::kHealth);
             float maxHP = targetActor->GetBaseActorValue(RE::ActorValue::kHealth);
 
-            // 格式化显示文本
-            std::wstring displayText = std::format(L"目标等级: {}\n当前血量: {:.0f} / {:.0f}", npcLevel, currentHP, maxHP);
+            // 格式化显示文本 - 添加名称显示
+            std::wstring displayText = std::format(L"目标: {}\\n等级: {}\\n血量: {:.0f} / {:.0f}", 
+                std::wstring(npcName.begin(), npcName.end()), // 转换string到wstring
+                npcLevel, 
+                currentHP, 
+                maxHP);
 
             // 调用游戏内置的文本绘制接口，在屏幕左上角输出信息
             auto* uiDrawing = RE::UIRenderer::GetSingleton();
