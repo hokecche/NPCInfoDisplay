@@ -1,57 +1,38 @@
+-- 全局兼容补丁，彻底解决is_toolchain空值报错，不会再丢失
 if not is_toolchain then
     is_toolchain = function(toolchain_name)
         return is_config("toolchain", toolchain_name)
     end
 end
 
--- 引入CommonLibF4子项目
+-- 引入CommonLibF4依赖
 includes("lib/commonlibf4")
 
--- 全局基础配置 强绑定不允许被覆盖
+-- 项目基础配置
 set_project("NPCInfoDisplay")
 set_version("1.0.0")
 set_license("GPL-3.0")
 set_languages("c++23")
 set_warnings("allextra")
--- 全局强制锁定CRT运行时为MD，和CommonLibF4完全对齐，从根源避免链接冲突
-set_runtimes("MD")
 
--- 预配置spdlog依赖，适配F4的宽字符输出要求
-add_requires("spdlog 1.16.0", {
-    configs = {
-        wchar = true,
-        std_format = true
-    }
-})
-
--- 注册全场景编译模式
+-- 注册全量编译模式，覆盖debug/release/releasedbg所有场景
 add_rules("mode.debug", "mode.release", "mode.releasedbg")
 add_rules("plugin.vsxmake.autoupdate")
-add_defines("NOMINMAX")
-add_cxxflags("/permissive-", {tools = "msvc"})
 
 -- Windows平台专属优化，解决MSVC编码兼容问题
 if is_plat("windows") then
     add_cxxflags("/utf-8", "/Zc:__cplusplus")
 end
 
--- 插件构建目标 所有配置都在独立作用域内生效
+-- F4SE插件目标配置
 target("NPCInfoDisplay")
     add_rules("commonlibf4.plugin", {
         name = "NPCInfoDisplay",
         author = "hokeche",
-        description = "辐射4 NPC信息显示F4SE插件"
+        description = "F4 plugin template using CommonLibF4"
     })
     set_kind("shared")
     add_files("src/**.cpp")
     add_headerfiles("src/**.h")
     add_includedirs("src")
     set_pcxxheader("src/pch.h")
-    add_packages("spdlog")
-
--- 针对Release模式做定向强约束，避免默认规则覆盖
-if is_mode("release") then
-    set_optimize("fastest")
-    add_defines("NDEBUG")
-    set_symbols("none")
-end
