@@ -44,3 +44,8 @@ if is_mode("release") then
     add_defines("NDEBUG")
     set_symbols("none")
 end
+
+
+if is_plat("windows") and is_toolchain("msvc") then
+    add_cxflags("/utf-8")
+end
