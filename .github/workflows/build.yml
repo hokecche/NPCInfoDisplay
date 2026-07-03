@@ -12,11 +12,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: 安装XMake构建环境
-        run: Invoke-Expression (Invoke-WebRequest 'https://cdn.jsdelivr.net/gh/xmake-io/xmake@master/scripts/get.ps1' -UseBasicParsing)
-
-      - name: 刷新环境变量，让xmake命令全局可用
-        run: $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+      - name: 安装XMake官方适配版本
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
 
       - name: 验证XMake安装状态
         run: xmake --version
