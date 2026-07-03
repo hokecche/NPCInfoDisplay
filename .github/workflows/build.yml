@@ -1,31 +1,24 @@
 name: 构建F4SE NPC信息显示插件
-# 配置触发规则：推送代码到主分支时自动启动构建
 on:
   push:
     branches: [ main, master ]
 
-# 定义顶层jobs字段，修复之前缺失jobs的报错
 jobs:
   build-f4se-plugin:
-    # 修正之前的run-on拼写错误，使用官方指定的Windows运行环境
     runs-on: windows-latest
-
     steps:
-      # 拉取仓库代码，包含所有子模块依赖
       - name: 拉取项目代码
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # 安装XMake构建工具
+      # 直接通过官方安装脚本安装XMake，完全绕过已经失效的第三方action
       - name: 安装XMake构建环境
-        uses: xmake-io/xmake-action-setup@v1
+        run: irm https://xmake.io/get.ps1 | iex
 
-      # 执行Release模式编译
       - name: 编译生成插件DLL
         run: xmake build -m release
 
-      # 上传编译好的插件文件作为构建产物
       - name: 上传生成的插件文件
         uses: actions/upload-artifact@v4
         with:
