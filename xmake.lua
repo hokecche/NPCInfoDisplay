@@ -9,7 +9,7 @@ set_languages("c++23")
 set_warnings("allextra")
 
 -- add common rules
-add_rules("mode.debug", "mode.releasedbg")
+add_rules("mode.debug", "mode.release", "mode.releasedbg")
 add_rules("plugin.vsxmake.autoupdate")
 
 -- define targets
