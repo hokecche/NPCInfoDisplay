@@ -1,3 +1,9 @@
+if not is_toolchain then
+    is_toolchain = function(toolchain_name)
+        return is_config("toolchain", toolchain_name)
+    end
+end
+
 -- 引入CommonLibF4子项目
 includes("lib/commonlibf4")
 
@@ -24,6 +30,11 @@ add_rules("plugin.vsxmake.autoupdate")
 add_defines("NOMINMAX")
 add_cxxflags("/permissive-", {tools = "msvc"})
 
+-- Windows平台专属优化，解决MSVC编码兼容问题
+if is_plat("windows") then
+    add_cxxflags("/utf-8", "/Zc:__cplusplus")
+end
+
 -- 插件构建目标 所有配置都在独立作用域内生效
 target("NPCInfoDisplay")
     add_rules("commonlibf4.plugin", {
@@ -43,9 +54,4 @@ if is_mode("release") then
     set_optimize("fastest")
     add_defines("NDEBUG")
     set_symbols("none")
-end
-
-
-if is_plat("windows") and is_toolchain("msvc") then
-    add_cxflags("/utf-8")
 end
