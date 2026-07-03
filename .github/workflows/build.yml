@@ -20,11 +20,17 @@ jobs:
       - name: 验证XMake安装状态
         run: xmake --version
 
+      - name: 初始化XMake构建配置
+        run: xmake f -c
+
       - name: 编译生成插件DLL
         run: xmake build -m release
+
+      - name: 校验插件DLL生成状态
+        run: if exist build/windows/x64/release/NPCInfoDisplay.dll (echo "插件构建成功") else (exit 1)
 
       - name: 上传生成的插件文件
         uses: actions/upload-artifact@v4
         with:
           name: NPC信息显示插件
-          path: build/windows/release/NPCInfoDisplay.dll
+          path: build/windows/x64/release/NPCInfoDisplay.dll
