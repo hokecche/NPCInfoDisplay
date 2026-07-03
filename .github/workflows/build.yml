@@ -2,24 +2,42 @@ name: 构建F4SE NPC信息显示插件
 on:
   push:
     branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build-f4se-plugin:
     runs-on: windows-latest
     steps:
-      - name: 拉取项目代码
+      - name: 拉取全量代码与子项目
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0
 
-      - name: 安装XMake构建环境
-        run: Invoke-Expression (Invoke-WebRequest 'https://cdn.jsdelivr.net/gh/xmake-io/xmake@master/scripts/get.ps1' -UseBasicParsing)
+      - name: 部署XMake构建环境
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
 
-      - name: 编译生成Release版插件DLL
-        run: xmake build -m release
+      - name: 缓存依赖包，加速后续构建
+        uses: actions/cache@v4
+        with:
+          path: ~/.xmake
+          key: ${{ runner.os }}-xmake-cache-${{ hashFiles('xmake.lua') }}
+          restore-keys: |
+            ${{ runner.os }}-xmake-cache-
 
-      - name: 上传生成的插件成品
+      - name: 初始化构建配置，自动安装所有依赖
+        run: xmake f -c -y
+
+      - name: 并行编译Release正式版插件
+        run: xmake build -m release -j $env:NUMBER_OF_PROCESSORS
+
+      - name: 校验插件生成结果
+        run: if exist build/windows/x64/release/NPCInfoDisplay.dll (echo "插件构建成功") else (exit 1)
+
+      - name: 上传成品插件
         uses: actions/upload-artifact@v4
         with:
-          name: NPC信息显示插件
-          path: build/windows/release/NPCInfoDisplay.dll
+          name: NPC信息显示插件Release包
+          path: build/windows/x64/release/NPCInfoDisplay.dll
