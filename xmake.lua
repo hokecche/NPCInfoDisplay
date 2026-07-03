@@ -2,8 +2,8 @@
 includes("lib/commonlibf4")
 
 -- set project constants
-set_project("commonlibf4-template")
-set_version("0.0.0")
+set_project("NPCInfoDisplay")
+set_version("1.0.0")
 set_license("GPL-3.0")
 set_languages("c++23")
 set_warnings("allextra")
@@ -13,14 +13,15 @@ add_rules("mode.debug", "mode.releasedbg")
 add_rules("plugin.vsxmake.autoupdate")
 
 -- define targets
-target("commonlibf4-template")
+target("NPCInfoDisplay")
     add_rules("commonlibf4.plugin", {
-        name = "commonlibf4-template",
-        author = "libxse",
+        name = "NPCInfoDisplay",
+        author = "hokecche",
         description = "F4SE plugin template using CommonLibF4"
     })
 
     -- add src files
+    set_kind("shared")
     add_files("src/**.cpp")
     add_headerfiles("src/**.h")
     add_includedirs("src")
