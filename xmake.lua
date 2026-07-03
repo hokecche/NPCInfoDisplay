@@ -21,6 +21,8 @@ add_requires("spdlog 1.16.0", {
 -- 注册全场景编译模式
 add_rules("mode.debug", "mode.release", "mode.releasedbg")
 add_rules("plugin.vsxmake.autoupdate")
+add_defines("NOMINMAX")
+add_cxxflags("/permissive-", {tools = "msvc"})
 
 -- 插件构建目标 所有配置都在独立作用域内生效
 target("NPCInfoDisplay")
