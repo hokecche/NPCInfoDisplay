@@ -16,12 +16,12 @@ namespace Plugin
             renderManager.AddEventSink<RenderHook>();
         }
 
-        void HandleEvent(RE::MenuModeOpenEvent* a_event)
+        void HandleEvent(RE::MenuOpenEvent* a_event)
         {
             // 空实现，仅用于注册事件接收器
         }
 
-        void HandleEvent(RE::MenuModeCloseEvent* a_event)
+        void HandleEvent(RE::MenuCloseEvent* a_event)
         {
             // 空实现，仅用于注册事件接收器
         }
